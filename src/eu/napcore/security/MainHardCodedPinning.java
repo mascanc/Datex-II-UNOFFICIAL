@@ -1,12 +1,9 @@
 package eu.napcore.security;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
@@ -18,9 +15,7 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -43,29 +38,18 @@ import javax.net.ssl.SSLSocketFactory;
  * @author mmasi@autostrade.it
  * 
  */
-public class Main {
+public class MainHardCodedPinning {
 	
 	
 	/** This is the URL of the remote service to contact. It is a fake url for a TOMCAT */
-	private static String remoteURL = "https://192.168.1.36:8444";
+	private static String remoteURL = "https://192.168.1.36:8443";
 
-	/** Should I check for OCSP? */
-	private static boolean checkOCSP = false;
-
-	/** Set to true if a proxy should be used (e.g., BURP suite) */
-	private static boolean useProxy = false;
-
-	/** Set the address of the proxy */
-	private static String proxyAddress = "192.168.1.2";
-
-	/** Set the port of the proxy */
-	private static int proxyPort;
-	
+	/** The hardcoded key. */
+	private static String hardcodedKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7UR2ScyPlOf7H6GNvxFegtJVbdPH6id3db7ZcUMTMoSBBqSj8zQpuKVbnjntrv2TYc6pZD+T5Xsg4Thg0RFilst47S34i2alEtzDOlBbuI/wnkZ2wox6pm1dncWC5E1HG2/5Vcxi9XeT7abjFbQLNkvH9iKBTv2jJEjbbde6YlWjQCaziSKKmIUrzb84IU/q584KaPsztmH1jFLLObOCCnWjnBr4Bfaz7LNIrIbz8ufpYubiF/cxKQ/WS1/7CfVqWaYa2awX00D+ziSWIVsYjLyuc5Z76aLLHunnfRyUZtoy/qLhlRPHOFFEjVg+41cMCeUVsv3r4fFUEB29knYuvwIDAQAB";
 	/** Should I pin the TLS certificate? */
 	private static boolean tlsPinning = true;
 
-	/** Variable that holds if a certificate pinned is found */
-	private static boolean found = false;
+
 
 	public static void main(String[] args) {
 
@@ -139,22 +123,6 @@ public class Main {
 						throw new SSLPeerUnverifiedException("The certificate from the server is revoked");
 					} 
 
-					if (checkOCSP) {
-						// Now checking OCSP
-						try {
-
-							String ocspUrl1 = TLSSocket.getOcspUrl1(leafCert);
-							System.out.println("Obtained OCSP URL: " + ocspUrl1);
-							TLSSocket.verify(leafCert, ocspUrl1);
-
-						} catch (Exception e) {
-							e.printStackTrace();
-							System.err.println("Unable to obtain the OCSP URL");
-							System.exit(-40);
-						}
-					} else {
-						System.out.println("Not checking for OCSP");
-					}
 					
 					/*
 					 * Now we try to pin the certificate. The certificates to be pinned are all 
@@ -162,36 +130,13 @@ public class Main {
 					 */
 					
 					if (tlsPinning) {
-						KeyStore truststore = socket.getTestTruststore();
 						
-						Collections.list(truststore.aliases()).forEach(x -> {
-							try {
-								X509Certificate tPCert = (X509Certificate) truststore.getCertificate(x);
-								System.out.println("Obtained certificate from TLS " + System.lineSeparator() + 
-										leafCert.getSubjectDN() + System.lineSeparator() + 
-										" and the one that I have in my truststore is " + System.lineSeparator() + 
-										tPCert.getSubjectDN());
-								if (Arrays.equals(leafCert.getPublicKey().getEncoded(), tPCert.getPublicKey().getEncoded())) {
-									System.out.println("Found a certificate to be pinned with key " + 
-								Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()));
-									setFoundpinnedCert(true);
-									return;
-								} else {
-									System.out.println("[DEBUG] expected the key :" + System.lineSeparator() 
-											+ Base64.getEncoder().encodeToString(tPCert.getPublicKey().getEncoded()) + 
-											System.lineSeparator() + ": while "
-													+ "I got :" + System.lineSeparator() +
-													Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()));
-								}
-
-							} catch (KeyStoreException e) {
-								System.err.println("Unable to obtain the key for alias " + x + ": " + e.getMessage());
-								System.exit(-24);							}
-						});
-						if (!getFoundpinnedCert()) {
-							throw new SSLPeerUnverifiedException("The certificate " + leafCert + " cannot be found in the truststore");
+						if (!Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()).equals(hardcodedKey)) {
+							System.out.println(Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()));
+							System.out.println(hardcodedKey);
+							throw new SSLPeerUnverifiedException("The certificate is not pinned!");
 						} else {
-							System.out.println("Certificate for TLS succesfully pinned");
+							System.out.println("Pin is ok");
 						}
 						
 					}
@@ -204,19 +149,12 @@ public class Main {
 				} catch (CertificateNotYetValidException e) {
 					System.err.println("The certificate is not yet valid " + e.getMessage());
 					System.exit(-22);
-				} catch (KeyStoreException e) {
-					System.err.println("The truststore is corrupted, or I cannot access it " + e.getMessage());
-					System.exit(-23);
+			
 				} catch (CertificateException e1) {
 					System.err.println("The truststore is corrupted, or I cannot access it (Cert Exception) " + e1.getMessage());
 					System.exit(-23);
-				} catch (NoSuchAlgorithmException e1) {
-					System.err.println("The truststore is corrupted, or I cannot access it (Unknown Algo Exception) " + e1.getMessage());
-					System.exit(-23);
-				} catch (IOException e1) {
-					System.err.println("The truststore is corrupted, or I cannot access it (is servercert in test directory?) " + e1.getMessage());
-					System.exit(-23);
-				}	
+				
+				} 
 				System.out.println("END Checking CRL revocation ");
 				return true;
 			}
@@ -234,15 +172,7 @@ public class Main {
 
 		HttpsURLConnection con=null;
 		
-		if (useProxy) {
-			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, proxyPort));
-			try {
-				con = (HttpsURLConnection)url.openConnection(proxy);
-			} catch (IOException e) {
-				System.err.println("Unable to open connection to the proxy, " + e.getMessage());
-				System.err.println(-81);
-			}
-		}
+		
 		
 		try {
 			con = (HttpsURLConnection) url.openConnection();
@@ -263,11 +193,5 @@ public class Main {
 	}
 
 	
-	private static void setFoundpinnedCert(boolean v) {
-		found = v;
-	}
-	
-	private static boolean getFoundpinnedCert() {
-		return found;
-	}
+
 }

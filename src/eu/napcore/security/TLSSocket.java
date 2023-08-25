@@ -85,16 +85,62 @@ public class TLSSocket {
 	/** The RSA key of the client */
 	private String clientKey = "test/testData/clientKey.der";
 
-	/** The RSA certificate of the server */
+	/** The RSA certificate of the client */
 	private String clientCert = "test/testData/clientCert.der";
 
+	/** The RSA certificate of the serfver */
+	private String serverCert = "test/testData/servercert.der";
+	
 	/** The certificate of the CA */
 	private String cacert = "test/testData/cacert.der";
 	
 	/** The url of the CRL. NOTE: the CRL is a file, and not obtained from the distribution point */
 	private String crlUrl = "test/testData/crl.der";
+	
+	/** The keystore, containing private and public keys. */
+	private KeyStore ks;
+	
+	/** The truststore, containing the CAcerts and the certificate to pin. */
+	private KeyStore ts;
+	
+	/** The truststore which is used to test the certificate pinning. This conrtains the server cert. */
+	private KeyStore testts;
 
+	/**
+	 * Obtain the truststore under test/testData/truststore.jks
+	 * @return
+	 * @throws KeyStoreException 
+	 * @throws CertificateException 
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public KeyStore getTestTruststore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+		FileInputStream fcert = new FileInputStream(serverCert);
+		FileInputStream fca = new FileInputStream(cacert);
 
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+		X509Certificate cert = (X509Certificate) cf.generateCertificate(fcert);
+		X509Certificate ca = (X509Certificate) cf.generateCertificate(fca);
+
+		X509Certificate[] chain = new X509Certificate[2];
+		chain[0] = cert;
+		chain[1] = ca;
+
+		testts = KeyStore.getInstance("JKS"); // load truststore
+
+		testts.load(null, null);
+		testts.setCertificateEntry("1", cert);
+		testts.setCertificateEntry("2", ca);
+		return testts;
+	}
+	/**
+	 * Obtains the truststore that has been used to establish the socket
+	 * @return the truststore
+	 */
+	public KeyStore getTruststore() {
+		return ts;
+	}
 	/**
 	 * Create a socket factory, with the specific certificate and cert chain
 	 * 
@@ -138,8 +184,8 @@ public class TLSSocket {
 			chain[0] = cert;
 			chain[1] = ca;
 
-			KeyStore ks = KeyStore.getInstance("JKS"); // load keystore
-			KeyStore ts = KeyStore.getInstance("JKS"); // load truststore
+			ks = KeyStore.getInstance("JKS"); // load keystore
+			ts = KeyStore.getInstance("JKS"); // load truststore
 
 			ks.load(null, null);
 			ts.load(null, null);

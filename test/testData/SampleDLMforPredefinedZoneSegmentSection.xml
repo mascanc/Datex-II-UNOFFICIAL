@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2020 rel. 2 sp1 (x64) (http://www.altova.com) by Fabrizio Paoletti (AUTOSTRADE PER L'ITALIA SPA) -->
+<d2:payload xmlns:com="http://datex2.eu/schema/3/common" xmlns:dlm="http://datex2.eu/schema/3/laneManagement" xmlns:tro="http://datex2.eu/schema/3/trafficRegulation" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:d2="http://datex2.eu/schema/3/d2Payload" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datex2.eu/schema/3/d2Payload DATEXII_3_D2Payload.xsd" xsi:type="dlm:LaneManagementPublication" lang="en-US" modelBaseVersion="3">
+	<com:publicationTime>2006-05-04T18:13:51.0</com:publicationTime>
+	<com:publicationCreator>
+		<com:country>it</com:country>
+		<com:nationalIdentifier>IT403</com:nationalIdentifier>
+	</com:publicationCreator>
+	<dlm:laneManagementSettingDescription xsi:type="dlm:LaneManagementSetting">
+		<dlm:informationManager>
+			<com:country>it</com:country>
+			<com:nationalIdentifier>IT403</com:nationalIdentifier>
+		</dlm:informationManager>
+		<dlm:applicableFeatureGroup featureGroupReferenceIndex="1">
+			<dlm:feature>
+				<dlm:trafficRegulation>
+					<tro:typeOfRegulation xsi:type="tro:SpeedLimit">
+						<tro:minValue>110</tro:minValue>
+					</tro:typeOfRegulation>
+				</dlm:trafficRegulation>
+			</dlm:feature>
+			<dlm:feature>
+				<dlm:trafficRegulation>
+					<tro:typeOfRegulation xsi:type="tro:SpeedLimit">
+						<tro:maxValue>130</tro:maxValue>
+					</tro:typeOfRegulation>
+				</dlm:trafficRegulation>
+			</dlm:feature>
+		</dlm:applicableFeatureGroup>
+		<dlm:applicableFeatureGroup featureGroupReferenceIndex="2">
+			<dlm:feature>
+				<dlm:trafficRegulation>
+					<tro:typeOfRegulation xsi:type="tro:SpeedLimit">
+						<tro:minValue>90</tro:minValue>
+					</tro:typeOfRegulation>
+				</dlm:trafficRegulation>
+			</dlm:feature>
+			<dlm:feature>
+				<dlm:trafficRegulation>
+					<tro:typeOfRegulation xsi:type="tro:SpeedLimit">
+						<tro:maxValue>110</tro:maxValue>
+					</tro:typeOfRegulation>
+				</dlm:trafficRegulation>
+			</dlm:feature>
+		</dlm:applicableFeatureGroup>
+		<dlm:applicableFeatureGroup featureGroupReferenceIndex="3">
+			<dlm:feature>
+				<dlm:trafficRegulation>
+					<tro:typeOfRegulation xmlns:tro="http://datex2.eu/schema/3/trafficRegulation" xsi:type="tro:AccessRestriction">
+						<tro:accessRestrictionType>noEntry</tro:accessRestrictionType>
+					</tro:typeOfRegulation>
+				</dlm:trafficRegulation>
+			</dlm:feature>
+		</dlm:applicableFeatureGroup>
+		<dlm:lmZoneReference id="111" version="1" xsi:type="com:VersionedReference"></dlm:lmZoneReference>
+		<dlm:lmTable  id="DMLTABLEDEMO01" version="1" xsi:type="com:VersionedReference"></dlm:lmTable>
+		<dlm:validity>
+			<com:validityStatus>active</com:validityStatus>
+			<com:validityTimeSpecification>
+				<com:overallStartTime>2006-05-04T18:13:51.0</com:overallStartTime>
+			</com:validityTimeSpecification>
+		</dlm:validity>
+		<dlm:segmentSetting>
+			<dlm:lmSegmentReference id="DLM-DEMO-Z1_SEG1" version="1" xsi:type="com:VersionedReference"></dlm:lmSegmentReference>
+			<dlm:sectionSetting index="1">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>closed</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>3</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+			<dlm:sectionSetting index="2">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>closed</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>3</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+			<dlm:sectionSetting index="3">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>closed</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>3</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+		</dlm:segmentSetting>
+		<dlm:segmentSetting>
+			<dlm:lmSegmentReference id="DLM-DEMO-Z1_SEG1" version="1" xsi:type="com:VersionedReference"></dlm:lmSegmentReference>
+			<dlm:sectionSetting index="1">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+			<dlm:sectionSetting index="2">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+			<dlm:sectionSetting index="3">
+				<dlm:effectiveTransitableNumberOfLanes>2</dlm:effectiveTransitableNumberOfLanes>
+				<dlm:laneSetting index="1" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>hardShoulder</dlm:laneUsage>
+					<dlm:featureGroupReference>2</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="2" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>slowVehicleLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+				<dlm:laneSetting index="3" xsi:type="dlm:LaneSetting">
+					<dlm:laneStatus>open</dlm:laneStatus>
+					<dlm:laneUsage>overtakingLane</dlm:laneUsage>
+					<dlm:featureGroupReference>1</dlm:featureGroupReference>
+					<dlm:reducedWidth>false</dlm:reducedWidth>
+				</dlm:laneSetting>
+			</dlm:sectionSetting>
+		</dlm:segmentSetting>
+	</dlm:laneManagementSettingDescription>
+</d2:payload>
