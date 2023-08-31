@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:dlm="http://datex2.eu/schema/3/laneManagement" version="3.0" targetNamespace="http://datex2.eu/schema/3/laneManagement" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:tro="http://datex2.eu/schema/3/trafficRegulation" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/trafficRegulation" schemaLocation="DATEXII_3_TrafficRegulation.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_LaneSettingStatusEnum">
+    <xs:simpleContent>
+      <xs:extension base="dlm:LaneSettingStatusEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TransitionalLaneType">
+    <xs:simpleContent>
+      <xs:extension base="dlm:TransitionalLaneType">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ApplicableFeatureGroup">
+    <xs:annotation>
+      <xs:documentation>the Feature groups defines a combination of information which is applicable to one or more road elements and can be associated dinamically to them</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_applicableFeatureGroupExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="featureGroupReferenceIndex" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>the reference to the feature group</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="Device">
+    <xs:annotation>
+      <xs:documentation>A device which is installed to monitor or manage the segment, section or lane, such as a VMS, a Measurement Site, a Camera, a Traffic Light</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="externalIdentifier" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>a reference as external identifier to the Device</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>description of the device</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Identifier" type="com:Reference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>an identification of a device as reference</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="versionedIdentifier" type="com:VersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>an identificaton of the device as versioned reference</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_deviceExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DynamicLaneCarriagewayDescription">
+    <xs:annotation>
+      <xs:documentation>information describing the status of a dynamically managed portion of a carriageway, which can be implemented because of roadworks or any road condition and situation for which a lane transitability is changed with respect to its standard setting.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="dlm:LaneManagementSettingDescription">
+        <xs:sequence>
+          <xs:element name="dynamicHardshoulderManagement" type="com:Boolean" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>when true it specifies the dynamic hardshoulder is managed in the related segmenst and sections</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="validity" type="com:Validity" />
+          <xs:element name="dynamicLaneSegment" type="dlm:DynamicLaneSegment" maxOccurs="unbounded" />
+          <xs:element name="_dynamicLaneCarriagewayDescriptionExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DynamicLaneSection">
+    <xs:annotation>
+      <xs:documentation>A lane homogeneous road portion dynamically managed in a homogenous way</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="lenght" type="com:MetresAsFloat" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>lenght of the section affected</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="numberOfLanes" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>nominal number of lanes in the section</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="offset" type="com:MetresAsFloat" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the offset related to the start the section in the flow direction measured from the start of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="locationReference" type="loc:LocationReference" minOccurs="0" />
+      <xs:element name="dynamicLaneStatus" type="dlm:DynamicLaneStatus" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_dynamicLaneSectionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence among he Sections of one Segment, conventionally in the vehicle flow direction</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="DynamicLaneSegment">
+    <xs:annotation>
+      <xs:documentation>a set of dynamic lane management setting information related to a single road and carriageway/direction</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="carriageway" type="loc:_CarriagewayEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>indicates  the carriageway where the dynamic lane management applies</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="direction" type="loc:_DirectionEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>direction where the dynamic lane management applies</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="locationReference" type="loc:LocationReference" />
+      <xs:element name="dynamicLaneSection" type="dlm:DynamicLaneSection" maxOccurs="unbounded" />
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_dynamicLaneSegmentExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DynamicLaneStatus">
+    <xs:annotation>
+      <xs:documentation>describes the lane setting </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="laneNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the lane number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneStatus" type="dlm:_LaneSettingStatusEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the lane transitability setting </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneUsage" type="loc:_LaneEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the current usage allowed for the lane (could be managed by reference to general restriction in METR model)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minWidth" type="com:MetresAsFloat" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>minimum lane width in the current dynamic configuration</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reducedWidth" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>it is set to true when the original widgt of the lane in the section is reduces from the designed lane width</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dynamicallyManaged" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>if set to True it express the specific lane is dynamically managed, when False it is a static configured lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="originalLaneLocation" type="loc:LocationReference" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Location of lane.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="toLane" type="dlm:DynamicLinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in a crossway or in splitting a lane it aggregates any lane to which the lane is splitting to </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fromLane" type="dlm:DynamicLinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in a crossway or when merging it specifies the lanes from which the origin lane is merged from</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="deviatedLaneLocation" type="loc:LocationReference" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>for a deviated lane it express the current location of the deviated lane </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_dynamicLaneStatusExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence among the lanes of one section, conventional order is external carriageway towards internal</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="DynamicLinkedLane">
+    <xs:annotation>
+      <xs:documentation>In a crossway or in the dynamically managed carriageway when lanes are merged or splitting, reference to the lanes to or from which the transitability is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="segmentReference" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>reference to the segment to which the linked lane is related</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="sectionIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index number of the section in the reference segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index reference related to the referenced section of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_dynamicLinkedLaneExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Feature">
+    <xs:annotation>
+      <xs:documentation>a class to reference and eventually associate any possible static or dynamic feature to segments, section and lanes such as road characteristics</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="description" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureReference" type="com:Reference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the referencte to a feature which is may be addressed in the group</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureVersionedReference" type="com:VersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the versione reference of a feature which may be addressed in the group</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="externalReference" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>an external reference to a feature </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="trafficRegulation" type="tro:TrafficRegulation" minOccurs="0" />
+      <xs:element name="_featureExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Lane">
+    <xs:annotation>
+      <xs:documentation>Indicates a specific lane which can be regular or transitional ( i.e. splitting or merging lane) which transitability can be regulated by means of static signs or Variable Message Signs, such as Lane Control Signs (LCS)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="dynamicallyManaged" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>when set to True express the specific lane is dynamically managed, when False it is a static configured lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The number of the lane, where 1 is nearest the hard shoulder/verge and the numbers increase towards the central reservation/road axis.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneUsage" type="loc:_LaneEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates the standard usage for lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reversable" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>can be used for vehicle in both direction based on setting</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transitional" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>lane which is splitting in 2 lanes or merging from 2 lanes in this section</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transitionType" type="dlm:_TransitionalLaneType" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>for transitional lanes indicates the splitting or meging transition of the specific lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minLaneWidth" type="com:MetresAsFloat" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>minimum width of the lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied to the lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="toLane" type="dlm:LinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in splitting a lane it aggregates any lane to which the lane is splitting to </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fromLane" type="dlm:LinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in a crossway or when merging it specifies the lanes from which the origin lane is merged from</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="locationReference" type="loc:LocationReference" minOccurs="0" />
+      <xs:element name="_laneExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence the lanes of one section, conventional order is external bound to internal as laneNumber attribute which may overlap with this</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="LaneManagementPublication">
+    <xs:annotation>
+      <xs:documentation>A publication containing zero or more Lane Management setting description</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:PayloadPublication">
+        <xs:sequence>
+          <xs:element name="laneManagementSettingDescription" type="dlm:LaneManagementSettingDescription" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="_laneManagementPublicationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LaneManagementSetting">
+    <xs:annotation>
+      <xs:documentation>A collection of the individual setting implemented for a dinamic lane management in set of DML managemd Segmnts</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="dlm:LaneManagementSettingDescription">
+        <xs:sequence>
+          <xs:element name="lmZoneReference" type="com:VersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the reference to the DLM managed Zone in a predefined Lane Management Table</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="lmTable" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>reference to the Table</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="validity" type="com:Validity" />
+          <xs:element name="segmentSetting" type="dlm:SegmentSetting" maxOccurs="unbounded" />
+          <xs:element name="_laneManagementSettingExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LaneManagementSettingDescription">
+    <xs:annotation>
+      <xs:documentation>the information related to a specific lane setting, which can be associated to predefined segment and their sections described in a Lane Management Table, or on not predefined sections such as in case of roadworks or a lane regulation for any purposes</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="informationManager" type="com:InternationalIdentifier" minOccurs="0" />
+      <xs:element name="applicableFeatureGroup" type="dlm:ApplicableFeatureGroup" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_laneManagementSettingDescriptionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LaneManagementTable">
+    <xs:annotation>
+      <xs:documentation>A versioned Dynamic Lane Management (DML) Table comprising a number of road zones divided in segments wher DLM management is in place by means of devices /signs which allow the DML management itself</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="laneManagementTableIdentification" type="com:String" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A string used as identification of the table by Traffic Operators</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="informationManager" type="com:InternationalIdentifier" minOccurs="0" />
+      <xs:element name="zone" type="dlm:Zone" maxOccurs="unbounded" />
+      <xs:element name="_laneManagementTableExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="LaneManagementTablePublication">
+    <xs:annotation>
+      <xs:documentation>A publication containing one or more Lane Management Tables each comprising a set of records which hold details of how the Lane Management segments and sections are defined. </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:PayloadPublication">
+        <xs:sequence>
+          <xs:element name="laneManagementTable" type="dlm:LaneManagementTable" maxOccurs="unbounded" />
+          <xs:element name="_laneManagementTablePublicationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LaneSetting">
+    <xs:annotation>
+      <xs:documentation>the information related to the lane setting</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="laneStatus" type="dlm:_LaneSettingStatusEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the status of the lane (open, closed, deviated, etc.)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneUsage" type="loc:_LaneEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the lane current usage</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minWidth" type="com:MetresAsFloat" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>minumum width of the lane</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reducedWidth" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>it is set to true when the original widgt of the lane in the section is reduces from the designed lane width</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="fromLane" type="dlm:ManagedLinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in a crossway or when merging it specifies the lanes from which the origin lane is merged from</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="toLane" type="dlm:ManagedLinkedLane" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>in splitting a lane it aggregates any lane to which the lane is splitting to </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_laneSettingExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence among the lanes of one section, conventional order is external carriageway towards internal</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="LaneSettingStatusEnum">
+    <xs:annotation>
+      <xs:documentation>Setting status of lanes by the responsible authority based on standardised regulation</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="alternatedOneway">
+        <xs:annotation>
+          <xs:documentation>the lane is being used for alternate circulation in both directions</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="closed">
+        <xs:annotation>
+          <xs:documentation>the lane is closed to all vehicles in any directions</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="deviatedToLeft">
+        <xs:annotation>
+          <xs:documentation>the lane is being deviated to left, vehicle should move to the lane immediately at lane left</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="deviatedToRight">
+        <xs:annotation>
+          <xs:documentation>the lane is being deviated to right, vehicle should move to the lane immediately at lane right</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="open">
+        <xs:annotation>
+          <xs:documentation>the lane is open, vehicles may be allowed to circulate oir not based on other specific regulation</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="reversed">
+        <xs:annotation>
+          <xs:documentation>the lane is being used by circulating traffic in the opposed direction than the standard circulation rules</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="LinkedLane">
+    <xs:annotation>
+      <xs:documentation>Besides implicit connections in the sequence order described by indexes in sequencial sections, the reference to a linked lane in a crossway or in the same road when lane is merging or splitting</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="segmentReference" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>reference to the segment to which the linked lane is related</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="sectionIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index number of the section in the reference segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index reference related to the referenced section of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_linkedLaneExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LinkedSegment">
+    <xs:annotation>
+      <xs:documentation>holds the reference to the linked segment, to or from which the associated segment drives</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="segmentReference" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>reference to the linked segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_linkedSegmentExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ManagedLinkedLane">
+    <xs:annotation>
+      <xs:documentation> in a crossway or in the same road when lanes are splitting, defines the lanes to which the transitability from the origin lane is allowed, when not implicit being in the sequence order described by the index</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="segmentReference" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>reference to the segment to which the linked lane is related</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="sectionIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index number of the section in the reference segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneIndexNumber" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the index reference related to the referenced section of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="laneUsage" type="loc:_LaneEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>current transitability setting for the connection among lanes (could be replaced by reference to restriction)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transitability" type="dlm:_LaneSettingStatusEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the current transitability of the link among lane (could be managed by general restriction applied)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_managedLinkedLaneExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Section">
+    <xs:annotation>
+      <xs:documentation>Section of Road which has homogeneous lane management by regulation, optionally implemented by Lane Control Systems signs or static signs or other devices.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="lenght" type="com:MetresAsNonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>extension lenght of the section</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="numberOfLanes" type="com:NonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>numer of transitable lanes in normal conditions (hardshoulder considered as not transitable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="offset" type="com:MetresAsFloat" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the offset of the beginning of the section measured from the start of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied to the section</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="locationReference" type="loc:LocationReference" minOccurs="0" />
+      <xs:element name="lane" type="dlm:Lane" maxOccurs="unbounded" />
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_sectionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence among he Sections of one Segment, conventionally in the vehicle flow direction</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="SectionSetting">
+    <xs:annotation>
+      <xs:documentation>The information related to a DLM Section</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="effectiveTransitableNumberOfLanes" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>express in the homogeneously managed section the effective number of transitable lanes</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="laneSetting" type="dlm:LaneSetting" maxOccurs="unbounded" />
+      <xs:element name="_sectionSettingExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="index" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>attribute which define an ordered sequence among he Sections of one Segment, conventionally in the vehicle flow direction</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="Segment">
+    <xs:annotation>
+      <xs:documentation>A continuous portion of road where lanes are uniformely managed by means of Dynamic Lane Management regulations, signs or devices,  divided in homogeneous lanes and devices Sections</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="carriageway" type="loc:_CarriagewayEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>specifies the carriageway related to the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="direction" type="loc:_DirectionEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>direction of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lenght" type="com:MetresAsNonNegativeInteger" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>lenght extension of the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied to the segment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="locationReference" type="loc:LocationReference" />
+      <xs:element name="section" type="dlm:Section" maxOccurs="unbounded" />
+      <xs:element name="drivingTo" type="dlm:LinkedSegment" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When segment ends  into another one  it express the segment to which the original segment is connected</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="drivingFrom" type="dlm:LinkedSegment" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When segment goes on from another one it express the segment from which the original segment is going on</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="device" type="dlm:Device" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_segmentExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="SegmentSetting">
+    <xs:annotation>
+      <xs:documentation>information describing the setting of a DLM Segment</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="lmSegmentReference" type="com:VersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>segment reference</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="nominalNumberOfLanes" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the current number nominal of transitable lanes for the segment. The current number of transitable lanes may be less in case of lanes closed or blocked for any reason</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="hardshoulderRunning" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>if set specifies for hardshoulder running systems the status of hardshoulder transitable</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="feature" type="dlm:Feature" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="sectionSetting" type="dlm:SectionSetting" maxOccurs="unbounded" />
+      <xs:element name="validity" type="com:Validity" minOccurs="0" />
+      <xs:element name="_segmentSettingExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TrafficRegulation">
+    <xs:annotation>
+      <xs:documentation>defined in traffic regulation model</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_trafficRegulationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="TransitionalLaneType">
+    <xs:annotation>
+      <xs:documentation>conventional transition considered for a lane when merging and splitting</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="merging">
+        <xs:annotation>
+          <xs:documentation>merging lane from 2 (..n) lanes into 1 lane, direction to not evident or significant</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="mergingToLeft">
+        <xs:annotation>
+          <xs:documentation>merging lane from 2 (..n) lanes into 1 lane to left</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="mergingToRight">
+        <xs:annotation>
+          <xs:documentation>merging lane from 2 (..n) lanes into 1 lane to Right</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="splitting">
+        <xs:annotation>
+          <xs:documentation>splitting from 1 lane into 2 (..n) lanes, direction splitting not significant or evident</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="splittingToLeft">
+        <xs:annotation>
+          <xs:documentation>splitting from1 lane into 2 (..n) lanes to left</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="splittingToRight">
+        <xs:annotation>
+          <xs:documentation>splitting from 1 lane into 2 (..n) lanes to right</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Zone">
+    <xs:annotation>
+      <xs:documentation>A continuous road portion, divided in one or more segment, where Dynamic Lane Management is done through specific regulations, signs and/or devices.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="referenceId" type="com:String" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>a reference string which is used to identify the zone by the operators</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="referenceName" type="com:MultilingualString" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>a geographical or network conventional name for the zone (e.g. "Milan ring road")</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="featureGroupReference" type="com:NonNegativeInteger" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>the reference to the feature group applied to the zone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dynamicHardshoulderManagement" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>when true it specifies the dynamic hardshoulder is managed in the zone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dynamicLaneManagement" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>if true it specifies a dynamic lane is managed for the zone and within its Segments and Sections</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="applicableFeatureGroup" type="dlm:ApplicableFeatureGroup" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="segment" type="dlm:Segment" maxOccurs="unbounded" />
+      <xs:element name="locationReference" type="loc:LocationReference" />
+      <xs:element name="_zoneExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+</xs:schema>

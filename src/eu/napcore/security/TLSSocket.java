@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +16,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CRLException;
@@ -105,6 +107,12 @@ public class TLSSocket {
 	
 	/** The truststore which is used to test the certificate pinning. This conrtains the server cert. */
 	private KeyStore testts;
+	
+	/** Contains the certificate to be used when signing. */
+	private X509Certificate cert;
+	
+	/** Contains the private key to be used when signing. */
+	private RSAPrivateKey rsaKey;
 
 	/**
 	 * Obtain the truststore under test/testData/truststore.jks
@@ -141,28 +149,15 @@ public class TLSSocket {
 	public KeyStore getTruststore() {
 		return ts;
 	}
-	/**
-	 * Create a socket factory, with the specific certificate and cert chain
-	 * 
-	 * @return the socket factory
-	 * @throws NoSuchAlgorithmException
-	 * @throws IOException
-	 * @throws InvalidKeySpecException
-	 * @throws CertificateException
-	 * @throws KeyStoreException
-	 * @throws UnrecoverableKeyException
-	 * @throws KeyManagementException
-	 * @throws CRLException
-	 */
-	public SSLSocketFactory createSocketFactory() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-	CertificateException, KeyStoreException, UnrecoverableKeyException, KeyManagementException, CRLException {
-
-		KeyFactory factory = KeyFactory.getInstance("RSA");
+	
+	public TLSSocket() throws NoSuchAlgorithmException, InvalidKeySpecException, CertificateException, KeyStoreException, CRLException {	
 		
 		/*
 		 * Create the container trust and key store
 		 */
 		try (FileInputStream fkey = new FileInputStream(clientKey)) {
+			KeyFactory factory = KeyFactory.getInstance("RSA");
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			int bytesRead = -1;
 			while ((bytesRead = fkey.read()) != -1) {
@@ -170,14 +165,14 @@ public class TLSSocket {
 			}
 
 			KeySpec spec = new PKCS8EncodedKeySpec(baos.toByteArray());
-			RSAPrivateKey rsaKey = (RSAPrivateKey) factory.generatePrivate(spec);
+			rsaKey = (RSAPrivateKey) factory.generatePrivate(spec);
 
 			FileInputStream fcert = new FileInputStream(clientCert);
 			FileInputStream fca = new FileInputStream(cacert);
 
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-			X509Certificate cert = (X509Certificate) cf.generateCertificate(fcert);
+			cert = (X509Certificate) cf.generateCertificate(fcert);
 			X509Certificate ca = (X509Certificate) cf.generateCertificate(fca);
 
 			X509Certificate[] chain = new X509Certificate[2];
@@ -192,8 +187,26 @@ public class TLSSocket {
 			ks.setKeyEntry("1", rsaKey, "changeit".toCharArray(), chain);
 			ts.setCertificateEntry("1", cert);
 			ts.setCertificateEntry("2", ca);
-
+			
 			setCrl((X509CRL) cf.generateCRL(new FileInputStream(crlUrl)));
+
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to read the key file");
+		}
+
+	}
+	/**
+	 * Create a socket factory, with the specific certificate and cert chain
+	 * 
+	 * @return the socket factory
+	 * @throws KeyStoreException 
+	 * @throws UnrecoverableKeyException 
+	 * @throws KeyManagementException 
+
+	 */
+	public SSLSocketFactory createSocketFactory() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException  {
+
+		
 
 			TrustManagerFactory trustMgrFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -222,7 +235,7 @@ public class TLSSocket {
 			SSLSocketFactory ssf = sslCtx.getSocketFactory();
 
 			return ssf;
-		}
+		
 	}
 
 	public static X509TrustManager getDefaultTrustManager() {
@@ -361,50 +374,12 @@ public class TLSSocket {
 		}
 
 	}
-
-	// https://www.demo2s.com/java/java-bouncycastle-ocspreqbuilder-tutorial-with-examples.html
-	//	public static byte[] getEncoded(Object rootCert) throws Exception {
-	//        try {
-	//            OCSPReq request = generateOCSPRequest(rootCert, serialNumber);
-	//            byte[] array = request.getEncoded();
-	//            URL urlt = new URL(url);
-	//            HttpURLConnection con = (HttpURLConnection) urlt.openConnection();
-	//            con.setRequestProperty("Content-Type", "application/ocsp-request");
-	//            con.setRequestProperty("Accept", "application/ocsp-response");
-	//            con.setDoOutput(true);
-	//            OutputStream out = con.getOutputStream();
-	//            DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-	//            dataOut.write(array);
-	//            dataOut.flush();
-	//            dataOut.close();
-	//            if (con.getResponseCode() / 100 != 2) {
-	//                throw new IOException("Invalid HTTP response");
-	//            }
-	//            // Get Response
-	//            InputStream in = (InputStream) con.getContent();
-	//            OCSPResp ocspResponse = new OCSPResp(in);
-	//
-	//            if (ocspResponse.getStatus() != 0)
-	//                throw new IOException("Invalid status: " + ocspResponse.getStatus());
-	//            BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
-	//            if (basicResponse != null) {
-	//                SingleResp[] responses = basicResponse.getResponses();
-	//                if (responses.length == 1) {
-	//                    SingleResp resp = responses[0];
-	//                    Object status = resp.getCertStatus();
-	//                    if (status == CertificateStatus.GOOD) {
-	//                        return basicResponse.getEncoded();
-	//                    } else if (status instanceof org.bouncycastle.cert.ocsp.RevokedStatus) {
-	//                        throw new IOException("OCSP Status is revoked!");
-	//                    } else {
-	//                        throw new IOException("OCSP Status is unknown!");
-	//                    }
-	//                }
-	//            }
-	//        } catch (Exception ex) {
-	//            throw new Exception(ex);
-	//        }
-	//        return null;
-	//    }
-
+	
+	public PrivateKey getPrivateKey() {
+		return this.rsaKey;
+	}
+	
+	public X509Certificate getCertificate() {
+		return this.cert;
+	}
 }

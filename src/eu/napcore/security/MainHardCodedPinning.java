@@ -39,8 +39,8 @@ import javax.net.ssl.SSLSocketFactory;
  * 
  */
 public class MainHardCodedPinning {
-	
-	
+
+
 	/** This is the URL of the remote service to contact. It is a fake url for a TOMCAT */
 	private static String remoteURL = "https://192.168.1.36:8443";
 
@@ -57,12 +57,111 @@ public class MainHardCodedPinning {
 		 * TLSSocket is the entry that contains the information about establishing
 		 * a socket. Certificates are set here. 
 		 */
-		TLSSocket socket = new TLSSocket();
+
 		SSLSocketFactory ssf = null;
 
 		try {
+			TLSSocket socket = new TLSSocket();
 			ssf = socket.createSocketFactory();
 
+
+
+			/*
+			 * Establish the url connection with the custom socket factory
+			 */
+			HttpsURLConnection.setDefaultSSLSocketFactory(ssf);
+
+			/*
+			 * Custom code to verify the certificate, for pinning, CRL, OCSP, and CT.
+			 */
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+
+
+				@Override
+				public boolean verify(String arg0, SSLSession arg1) {
+					System.out.println("Verifying certificate for endpoint with IP" + arg0);
+					System.out.println("Ciphersuite is "+arg1.getCipherSuite());
+					try {
+						Certificate[] cert = arg1.getPeerCertificates();
+						System.out.println("Obtained a chain of " + cert.length + " certificates");
+
+						// The first certificate is the leaf up to the chain.
+						// NOTE: we verify the CRL just for the LEAF!!! This is not 
+						// correct WE HAVE TO VERIFY FOR EVERY SINGLE CERTIFICATE!!!! @FIXME 
+
+						System.out.println("Checking for CRL");
+						X509Certificate leafCert = (X509Certificate)cert[0];
+						leafCert.checkValidity();
+						X509Certificate cacert = (X509Certificate)cert[1];
+						cacert.checkValidity();
+						X509CRLEntry isRevoked = socket.getCrl().getRevokedCertificate(leafCert);
+
+						if (isRevoked != null) {
+							throw new SSLPeerUnverifiedException("The certificate from the server is revoked");
+						} 
+
+
+						/*
+						 * Now we try to pin the certificate. The certificates to be pinned are all 
+						 * the one which are verified before in the PKIX
+						 */
+
+						if (tlsPinning) {
+
+							if (!Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()).equals(hardcodedKey)) {
+								System.out.println(Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()));
+								System.out.println(hardcodedKey);
+								throw new SSLPeerUnverifiedException("The certificate is not pinned!");
+							} else {
+								System.out.println("Pin is ok");
+							}
+
+						}
+					} catch (SSLPeerUnverifiedException e) {
+						System.err.println("Obtained an exception when verifiying the certificate " + e.getMessage());
+						System.exit(-20);
+					} catch (CertificateExpiredException e) {
+						System.err.println("The certificate is expired " + e.getMessage());
+						System.exit(-21);
+					} catch (CertificateNotYetValidException e) {
+						System.err.println("The certificate is not yet valid " + e.getMessage());
+						System.exit(-22);
+
+					} 
+					System.out.println("END Checking CRL revocation ");
+					return true;
+				}
+			});
+
+
+			URL url=null;
+			try {
+				url = new URL(remoteURL);
+			} catch (MalformedURLException e) {
+				System.err.println("The URL is malformed: " + e.getMessage());
+				System.exit(-8);
+			}
+
+
+			HttpsURLConnection con=null;
+
+
+
+			try {
+				con = (HttpsURLConnection) url.openConnection();
+			} catch (IOException e) {
+				System.err.println("Unable to connect: " + e.getMessage());
+				System.exit(-9);
+			}
+
+			con.setRequestProperty("User-Agent", "Original Application");
+
+			try {
+				System.out.println("Response code " + con.getResponseCode());
+			} catch (IOException e) {
+				System.err.println("An error occurred when trying to perform I/O during the connection: " + e.getMessage());
+				System.exit(-10);
+			}
 		} catch (UnrecoverableKeyException e) {
 			System.err.println("An error occurred when trying to recover the key: " + e.getMessage());
 			System.exit(-1);
@@ -81,117 +180,13 @@ public class MainHardCodedPinning {
 		} catch (KeyStoreException e) {
 			System.err.println("An error occurred when trying to store the key in the keystore: " + e.getMessage());
 			System.exit(-6);
-		} catch (IOException e) {
-			System.err.println("An error occurred when trying to perform I/O: " + e.getMessage());
-			System.exit(-7);
-		} catch (CRLException e) {
+		}  catch (CRLException e) {
 			System.err.println("An error occurred when trying to load CRL: " + e.getMessage());
 			System.exit(-12);
 		}
-
-		/*
-		 * Establish the url connection with the custom socket factory
-		 */
-		HttpsURLConnection.setDefaultSSLSocketFactory(ssf);
-
-		/*
-		 * Custom code to verify the certificate, for pinning, CRL, OCSP, and CT.
-		 */
-		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-
-
-			@Override
-			public boolean verify(String arg0, SSLSession arg1) {
-				System.out.println("Verifying certificate for endpoint with IP" + arg0);
-				System.out.println("Ciphersuite is "+arg1.getCipherSuite());
-				try {
-					Certificate[] cert = arg1.getPeerCertificates();
-					System.out.println("Obtained a chain of " + cert.length + " certificates");
-
-					// The first certificate is the leaf up to the chain.
-					// NOTE: we verify the CRL just for the LEAF!!! This is not 
-					// correct WE HAVE TO VERIFY FOR EVERY SINGLE CERTIFICATE!!!! @FIXME 
-
-					System.out.println("Checking for CRL");
-					X509Certificate leafCert = (X509Certificate)cert[0];
-					leafCert.checkValidity();
-					X509Certificate cacert = (X509Certificate)cert[1];
-					cacert.checkValidity();
-					X509CRLEntry isRevoked = socket.getCrl().getRevokedCertificate(leafCert);
-
-					if (isRevoked != null) {
-						throw new SSLPeerUnverifiedException("The certificate from the server is revoked");
-					} 
-
-					
-					/*
-					 * Now we try to pin the certificate. The certificates to be pinned are all 
-					 * the one which are verified before in the PKIX
-					 */
-					
-					if (tlsPinning) {
-						
-						if (!Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()).equals(hardcodedKey)) {
-							System.out.println(Base64.getEncoder().encodeToString(leafCert.getPublicKey().getEncoded()));
-							System.out.println(hardcodedKey);
-							throw new SSLPeerUnverifiedException("The certificate is not pinned!");
-						} else {
-							System.out.println("Pin is ok");
-						}
-						
-					}
-				} catch (SSLPeerUnverifiedException e) {
-					System.err.println("Obtained an exception when verifiying the certificate " + e.getMessage());
-					System.exit(-20);
-				} catch (CertificateExpiredException e) {
-					System.err.println("The certificate is expired " + e.getMessage());
-					System.exit(-21);
-				} catch (CertificateNotYetValidException e) {
-					System.err.println("The certificate is not yet valid " + e.getMessage());
-					System.exit(-22);
-			
-				} catch (CertificateException e1) {
-					System.err.println("The truststore is corrupted, or I cannot access it (Cert Exception) " + e1.getMessage());
-					System.exit(-23);
-				
-				} 
-				System.out.println("END Checking CRL revocation ");
-				return true;
-			}
-		});
-		
-		
-		URL url=null;
-		try {
-			url = new URL(remoteURL);
-		} catch (MalformedURLException e) {
-			System.err.println("The URL is malformed: " + e.getMessage());
-			System.exit(-8);
-		}
-
-
-		HttpsURLConnection con=null;
-		
-		
-		
-		try {
-			con = (HttpsURLConnection) url.openConnection();
-		} catch (IOException e) {
-			System.err.println("Unable to connect: " + e.getMessage());
-			System.exit(-9);
-		}
-
-		con.setRequestProperty("User-Agent", "Original Application");
-
-		try {
-			System.out.println("Response code " + con.getResponseCode());
-		} catch (IOException e) {
-			System.err.println("An error occurred when trying to perform I/O during the connection: " + e.getMessage());
-			System.exit(-10);
-		}
-
 	}
 
-	
+
+
 
 }
