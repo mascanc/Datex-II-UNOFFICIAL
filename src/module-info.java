@@ -13,4 +13,5 @@ module NAP {
 	requires org.apache.wss4j.dom;
 	requires org.apache.wss4j.common;
 	requires org.apache.santuario.xmlsec;
+	requires xercesImpl;
 }

@@ -3,27 +3,37 @@ package eu.napcore.security.soap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.Validator;
 
 import org.apache.wss4j.common.crypto.Crypto;
-import org.apache.wss4j.common.crypto.CryptoFactory;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.dom.WSConstants;
 import org.apache.wss4j.dom.engine.WSSecurityEngine;
 import org.apache.wss4j.dom.message.WSSecHeader;
 import org.apache.wss4j.dom.message.WSSecSignature;
 import org.apache.wss4j.dom.message.WSSecTimestamp;
+import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -176,10 +186,34 @@ public class SoapMessageReader {
 
 			Document signedDoc = builder.build(crypto);
 			
+			
+
 			System.out.println(printMessage(signedDoc));
+			
+			LinkedList<StreamSource> schemas = new LinkedList<>();
+			
+			try (Stream<Path> paths = Files.walk(Paths.get("test/testData/xml"))) {
+			    paths
+			        .filter(Files::isRegularFile)
+			        .forEach(x -> {
+			        	StreamSource t = new StreamSource(x.toFile());
+			        	schemas.add(t);
+			        });
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			
+			
+			XMLSchemaFactory xmlSchemaFactory = new XMLSchemaFactory();
+			Schema schema = xmlSchemaFactory.newSchema((Source[]) schemas.toArray());     
+			Validator validator = schema.newValidator();
+			validator.validate(new DOMSource(signedDoc));
 
-
-		} catch (WSSecurityException e) {
+		} catch (WSSecurityException | SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
